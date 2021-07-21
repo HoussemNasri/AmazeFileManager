@@ -73,7 +73,6 @@ import com.amaze.filemanager.asynchronous.SaveOnDataUtilsChange;
 import com.amaze.filemanager.asynchronous.asynctasks.CloudLoaderAsyncTask;
 import com.amaze.filemanager.asynchronous.asynctasks.DeleteTask;
 import com.amaze.filemanager.asynchronous.asynctasks.TaskKt;
-import com.amaze.filemanager.asynchronous.asynctasks.movecopy.MoveFiles;
 import com.amaze.filemanager.asynchronous.asynctasks.movecopy.MoveFilesTask;
 import com.amaze.filemanager.asynchronous.management.ServiceWatcherUtil;
 import com.amaze.filemanager.asynchronous.services.CopyService;
@@ -1515,7 +1514,9 @@ public class MainActivity extends PermissionsActivity
                   oppathe = "";
                 }
 
-                TaskKt.fromTask(new MoveFilesTask(oparrayListList,
+                TaskKt.fromTask(
+                    new MoveFilesTask(
+                        oparrayListList,
                         isRootExplorer(),
                         mainFragment.getCurrentPath(),
                         this,
