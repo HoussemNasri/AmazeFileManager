@@ -42,7 +42,7 @@ import java.time.ZonedDateTime
 @RunWith(AndroidJUnit4::class)
 @Config(shadows = [ShadowMultiDex::class], sdk = [JELLY_BEAN, KITKAT, P])
 @Suppress("TooManyFunctions", "StringLiteralDuplication")
-abstract class AbstractCompressedHelperTaskTest {
+abstract class AbstractCompressedHelperCallableTest {
 
     private val EXPECTED_TIMESTAMP = ZonedDateTime.of(
         2018,
@@ -54,13 +54,6 @@ abstract class AbstractCompressedHelperTaskTest {
         0,
         ZoneId.of("UTC")
     ).toInstant().toEpochMilli()
-
-    protected val emptyCallback = object :
-        OnAsyncTaskFinished<AsyncTaskResult<ArrayList<CompressedObjectParcelable>>> {
-        override fun onAsyncTaskFinished(
-            data: AsyncTaskResult<ArrayList<CompressedObjectParcelable>>
-        ) = Unit
-    }
 
     /**
      * Test setup.
@@ -77,10 +70,10 @@ abstract class AbstractCompressedHelperTaskTest {
     @Test
     open fun testRoot() {
         val task = createTask("")
-        val result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("test-archive", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        val result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("test-archive", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
     }
 
     /**
@@ -89,62 +82,62 @@ abstract class AbstractCompressedHelperTaskTest {
     @Test
     open fun testSublevels() {
         var task = createTask("test-archive")
-        var result = task.doInBackground()
-        Assert.assertEquals(5, result.result.size.toLong())
-        Assert.assertEquals("1", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
-        Assert.assertEquals("2", result.result[1].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[1].date)
-        Assert.assertEquals("3", result.result[2].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[2].date)
-        Assert.assertEquals("4", result.result[3].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[3].date)
-        Assert.assertEquals("a", result.result[4].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[4].date)
+        var result = task.call()
+        Assert.assertEquals(5, result.size.toLong())
+        Assert.assertEquals("1", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
+        Assert.assertEquals("2", result[1].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[1].date)
+        Assert.assertEquals("3", result[2].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[2].date)
+        Assert.assertEquals("4", result[3].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[3].date)
+        Assert.assertEquals("a", result[4].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[4].date)
         task = createTask("test-archive/1")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("8", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("8", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/2")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("7", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("7", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/3")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("6", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("6", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/4")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("5", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("5", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/a")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("b", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("b", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/a/b")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("c", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("c", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/a/b/c")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("d", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("d", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         task = createTask("test-archive/a/b/c/d")
-        result = task.doInBackground()
-        Assert.assertEquals(1, result.result.size.toLong())
-        Assert.assertEquals("lipsum.bin", result.result[0].name)
-        Assert.assertEquals(EXPECTED_TIMESTAMP, result.result[0].date)
+        result = task.call()
+        Assert.assertEquals(1, result.size.toLong())
+        Assert.assertEquals("lipsum.bin", result[0].name)
+        Assert.assertEquals(EXPECTED_TIMESTAMP, result[0].date)
         // assertEquals(512, result.get(0).size);
     }
 
-    protected abstract fun createTask(relativePath: String): CompressedHelperTask
+    protected abstract fun createTask(relativePath: String): CompressedHelperCallable
 
     private fun copyArchivesToStorage() {
         File("src/test/resources").listFiles()?.forEach {

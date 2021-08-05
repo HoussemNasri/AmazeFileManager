@@ -24,15 +24,14 @@ import android.os.Environment
 import androidx.test.core.app.ApplicationProvider
 import java.io.File
 
-class EncryptedZipHelperTaskTest : AbstractCompressedHelperTaskTest() {
-    override fun createTask(relativePath: String): CompressedHelperTask = ZipHelperTask(
+class EncryptedZipHelperTaskTest : AbstractCompressedHelperCallableTest() {
+    override fun createTask(relativePath: String): CompressedHelperCallable = ZipHelperCallable(
         ApplicationProvider.getApplicationContext(),
         File(
             Environment.getExternalStorageDirectory(),
             "test-archive-encrypted.zip"
         ).absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

@@ -27,29 +27,28 @@ import org.junit.Assert.*
 import org.junit.Test
 import java.io.File
 
-class RarHelperTaskTest : AbstractCompressedHelperTaskTest() {
+class RarHelperTaskTest : AbstractCompressedHelperCallableTest() {
 
     /**
      * Test multi volume RAR (v4).
      */
     @Test
     fun testMultiVolumeRar() {
-        val task: CompressedHelperTask = RarHelperTask(
+        val callable: CompressedHelperCallable = RarHelperCallable(
             File(
                 Environment.getExternalStorageDirectory(),
                 "test-multipart-archive-v4.part1.rar"
             )
                 .absolutePath,
             "",
-            false,
-            emptyCallback
+            false
         )
-        val result = task.doInBackground()
+        val result = callable.call()
         assertNotNull(result)
-        assertNotNull(result.result)
-        assertEquals(1, result.result.size.toLong())
-        assertEquals("test.bin", result.result[0].name)
-        assertEquals((1024 * 128).toLong(), result.result[0].size)
+        assertNotNull(result)
+        assertEquals(1, result.size.toLong())
+        assertEquals("test.bin", result[0].name)
+        assertEquals((1024 * 128).toLong(), result[0].size)
     }
 
     /**
@@ -57,28 +56,28 @@ class RarHelperTaskTest : AbstractCompressedHelperTaskTest() {
      */
     @Test
     fun testMultiVolumeRarV5() {
-        val task: CompressedHelperTask = RarHelperTask(
+        val callable: CompressedHelperCallable = RarHelperCallable(
             File(
                 Environment.getExternalStorageDirectory(),
                 "test-multipart-archive-v5.part1.rar"
             )
                 .absolutePath,
             "",
-            false,
-            emptyCallback
+            false
         )
-        val result = task.doInBackground()
-        assertNotNull(result)
-        assertNull(result.result)
-        assertNotNull(result.exception)
-        assertEquals(ArchiveException::class.java, result.exception.javaClass)
-        assertEquals(UnsupportedRarV5Exception::class.java, result.exception.cause!!.javaClass)
+        val result = try {
+            callable.call()
+        } catch (exception: Throwable) {
+            assertEquals(ArchiveException::class.java, exception.javaClass)
+            assertEquals(UnsupportedRarV5Exception::class.java, exception.cause!!.javaClass)
+            null
+        }
+        assertNull(result)
     }
 
-    override fun createTask(relativePath: String): CompressedHelperTask = RarHelperTask(
+    override fun createTask(relativePath: String): CompressedHelperCallable = RarHelperCallable(
         File(Environment.getExternalStorageDirectory(), "test-archive.rar").absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

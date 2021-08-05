@@ -24,12 +24,11 @@ import android.os.Environment
 import androidx.test.core.app.ApplicationProvider
 import java.io.File
 
-class TarHelperTaskTest : AbstractCompressedHelperTaskTest() {
-    override fun createTask(relativePath: String): CompressedHelperTask = TarHelperTask(
+class TarHelperTaskTest : AbstractCompressedHelperCallableTest() {
+    override fun createTask(relativePath: String): CompressedHelperCallable = TarHelperCallable(
         ApplicationProvider.getApplicationContext(),
         File(Environment.getExternalStorageDirectory(), "test-archive.tar").absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

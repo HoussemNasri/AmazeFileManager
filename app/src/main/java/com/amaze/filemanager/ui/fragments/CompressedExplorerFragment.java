@@ -28,12 +28,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.compress.PasswordRequiredException;
+
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.amaze.filemanager.R;
 import com.amaze.filemanager.adapters.CompressedExplorerAdapter;
 import com.amaze.filemanager.adapters.data.CompressedObjectParcelable;
+import com.amaze.filemanager.application.AppConfig;
 import com.amaze.filemanager.asynchronous.asynctasks.DeleteTask;
 import com.amaze.filemanager.asynchronous.services.ExtractService;
 import com.amaze.filemanager.file_operations.filesystem.OpenMode;
+import com.amaze.filemanager.file_operations.filesystem.compressed.ArchivePasswordCache;
 import com.amaze.filemanager.filesystem.HybridFileParcelable;
 import com.amaze.filemanager.filesystem.compressed.CompressedHelper;
 import com.amaze.filemanager.filesystem.compressed.showcontents.Decompressor;
@@ -41,6 +47,7 @@ import com.amaze.filemanager.filesystem.files.FileUtils;
 import com.amaze.filemanager.ui.activities.MainActivity;
 import com.amaze.filemanager.ui.activities.superclasses.BasicActivity;
 import com.amaze.filemanager.ui.colors.ColorPreferenceHelper;
+import com.amaze.filemanager.ui.dialogs.GeneralDialogCreation;
 import com.amaze.filemanager.ui.fragments.preference_fragments.PreferencesConstants;
 import com.amaze.filemanager.ui.provider.UtilitiesProvider;
 import com.amaze.filemanager.ui.theme.AppTheme;
@@ -68,10 +75,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.ColorInt;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
@@ -79,6 +88,10 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import io.reactivex.Flowable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class CompressedExplorerFragment extends Fragment implements BottomBarButtonPath {
   public static final String KEY_PATH = "path";
@@ -429,28 +442,68 @@ public class CompressedExplorerFragment extends Fragment implements BottomBarBut
     if (folder.startsWith("/")) folder = folder.substring(1);
 
     boolean addGoBackItem = gobackitem && !isRoot(folder);
-    String finalfolder = folder;
     if (decompressor != null) {
-      decompressor
-          .changePath(
-              folder,
-              addGoBackItem,
+      String finalFolder = folder;
+      Flowable.fromCallable(decompressor.changePath(folder, addGoBackItem))
+          .subscribeOn(Schedulers.io())
+          .observeOn(AndroidSchedulers.mainThread())
+          .subscribe(
               result -> {
-                if (result.exception == null) {
-                  elements = result.result;
-                  createViews(elements, finalfolder);
-                  swipeRefreshLayout.setRefreshing(false);
-                  updateBottomBar();
+                elements = result;
+                createViews(elements, finalFolder);
+                swipeRefreshLayout.setRefreshing(false);
+                updateBottomBar();
+              },
+              error -> {
+                if (error instanceof PasswordRequiredException) {
+                  dialogGetPasswordFromUser(finalFolder);
                 } else {
-                  archiveCorruptOrUnsupportedToast(result.exception);
+                  archiveCorruptOrUnsupportedToast(error);
                 }
-              })
-          .execute();
+              });
+
       swipeRefreshLayout.setRefreshing(true);
       updateBottomBar();
     } else {
       archiveCorruptOrUnsupportedToast(null);
     }
+  }
+
+  private void dialogGetPasswordFromUser(@NonNull final String filePath) {
+    final MaterialDialog.SingleButtonCallback positiveCallback =
+        (MaterialDialog dialog, DialogAction action) -> {
+          EditText editText = dialog.getView().findViewById(R.id.singleedittext_input);
+          String password = editText.getText().toString();
+          ArchivePasswordCache.getInstance().put(filePath, password);
+          dialog.dismiss();
+          changePath(filePath);
+        };
+
+    ArchivePasswordCache.getInstance().remove(filePath);
+    GeneralDialogCreation.showPasswordDialog(
+        requireContext(),
+        (MainActivity) requireActivity(),
+        AppConfig.getInstance().getUtilsProvider().getAppTheme(),
+        R.string.archive_password_prompt,
+        R.string.authenticate_password,
+        positiveCallback,
+        null);
+  }
+
+  private void archiveCorruptOrUnsupportedToast(@Nullable final Throwable e) {
+    @StringRes
+    int msg =
+        (e != null
+                && e.getCause() != null
+                && UnsupportedRarV5Exception.class.isAssignableFrom(e.getCause().getClass()))
+            ? R.string.error_unsupported_v5_rar
+            : R.string.archive_unsupported_or_corrupt;
+    Toast.makeText(
+            getActivity(),
+            getActivity().getString(msg, compressedFile.getAbsolutePath()),
+            Toast.LENGTH_LONG)
+        .show();
+    getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
   }
 
   @Override
@@ -539,21 +592,5 @@ public class CompressedExplorerFragment extends Fragment implements BottomBarBut
 
   private boolean isRoot(String folder) {
     return folder == null || folder.isEmpty();
-  }
-
-  private void archiveCorruptOrUnsupportedToast(@Nullable Throwable e) {
-    @StringRes
-    int msg =
-        (e != null
-                && e.getCause() != null
-                && UnsupportedRarV5Exception.class.isAssignableFrom(e.getCause().getClass()))
-            ? R.string.error_unsupported_v5_rar
-            : R.string.archive_unsupported_or_corrupt;
-    Toast.makeText(
-            getActivity(),
-            getActivity().getString(msg, compressedFile.getAbsolutePath()),
-            Toast.LENGTH_LONG)
-        .show();
-    getActivity().getSupportFragmentManager().beginTransaction().remove(this).commit();
   }
 }

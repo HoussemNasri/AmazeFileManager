@@ -27,12 +27,12 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import java.io.File
 
-class ZipHelperTaskTest : AbstractCompressedHelperTaskTest() {
+class ZipHelperTaskTest : AbstractCompressedHelperCallableTest() {
 
     /**
-     * Verification on logic in [ZipHelperTask] assigning zip entry path.
+     * Verification on logic in [ZipHelperCallable] assigning zip entry path.
      *
-     * @see ZipHelperTask.addElements
+     * @see ZipHelperCallable.addElements
      */
     @Test
     fun testVariableYAssignment() {
@@ -57,20 +57,18 @@ class ZipHelperTaskTest : AbstractCompressedHelperTaskTest() {
      */
     @Test(expected = ArchiveException::class)
     fun testInvalidFileUriShouldThrowArchiveException() {
-        ZipHelperTask(
+        ZipHelperCallable(
             ApplicationProvider.getApplicationContext(),
             "mailto:test@test.com",
             "",
-            false,
-            emptyCallback
+            false
         ).addElements(ArrayList())
     }
 
-    override fun createTask(relativePath: String): CompressedHelperTask = ZipHelperTask(
+    override fun createTask(relativePath: String): CompressedHelperCallable = ZipHelperCallable(
         ApplicationProvider.getApplicationContext(),
         File(Environment.getExternalStorageDirectory(), "test-archive.zip").absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

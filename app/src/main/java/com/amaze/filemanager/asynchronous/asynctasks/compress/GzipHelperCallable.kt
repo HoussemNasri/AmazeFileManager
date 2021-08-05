@@ -20,18 +20,18 @@
 
 package com.amaze.filemanager.asynchronous.asynctasks.compress
 
-import android.os.Environment
-import com.amaze.filemanager.file_operations.filesystem.compressed.ArchivePasswordCache
-import java.io.File
+import android.content.Context
+import org.apache.commons.compress.compressors.CompressorInputStream
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream
 
-class ListEncryptedSevenZipHelperTaskTest : AbstractCompressedHelperCallableTest() {
-    override fun createTask(relativePath: String): CompressedHelperCallable {
-        File(
-            Environment.getExternalStorageDirectory(),
-            "test-archive-encrypted-list.7z"
-        ).absolutePath.let {
-            ArchivePasswordCache.getInstance()[it] = "123456"
-            return SevenZipHelperCallable(it, relativePath, false)
-        }
-    }
+class GzipHelperCallable(
+    context: Context,
+    filePath: String,
+    relativePath: String,
+    goBack: Boolean
+) :
+    AbstractCompressedTarArchiveHelperCallable(context, filePath, relativePath, goBack) {
+
+    override fun getCompressorInputStreamClass(): Class<out CompressorInputStream> =
+        GzipCompressorInputStream::class.java
 }

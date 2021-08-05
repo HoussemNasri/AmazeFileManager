@@ -24,12 +24,11 @@ import android.os.Environment
 import androidx.test.core.app.ApplicationProvider
 import java.io.File
 
-class XzHelperTaskTest : AbstractCompressedHelperTaskTest() {
-    override fun createTask(relativePath: String): CompressedHelperTask = XzHelperTask(
+class XzHelperTaskTest : AbstractCompressedHelperCallableTest() {
+    override fun createTask(relativePath: String): CompressedHelperCallable = XzHelperCallable(
         ApplicationProvider.getApplicationContext(),
         File(Environment.getExternalStorageDirectory(), "test-archive.tar.xz").absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

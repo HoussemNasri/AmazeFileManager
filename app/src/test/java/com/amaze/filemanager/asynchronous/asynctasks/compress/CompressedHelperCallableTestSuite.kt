@@ -41,4 +41,4 @@ import org.junit.runners.Suite.SuiteClasses
     EncryptedSevenZipHelperTaskTest::class,
     ListEncryptedSevenZipHelperTaskTest::class
 )
-class CompressedHelperTaskTestSuite
+class CompressedHelperCallableTestSuite

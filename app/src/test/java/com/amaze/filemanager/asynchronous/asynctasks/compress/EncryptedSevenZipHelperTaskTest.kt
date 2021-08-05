@@ -23,14 +23,13 @@ package com.amaze.filemanager.asynchronous.asynctasks.compress
 import android.os.Environment
 import java.io.File
 
-class EncryptedSevenZipHelperTaskTest : AbstractCompressedHelperTaskTest() {
-    override fun createTask(relativePath: String): CompressedHelperTask = SevenZipHelperTask(
+class EncryptedSevenZipHelperTaskTest : AbstractCompressedHelperCallableTest() {
+    override fun createTask(relativePath: String): CompressedHelperCallable = SevenZipHelperCallable(
         File(
             Environment.getExternalStorageDirectory(),
             "test-archive-encrypted.7z"
         ).absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

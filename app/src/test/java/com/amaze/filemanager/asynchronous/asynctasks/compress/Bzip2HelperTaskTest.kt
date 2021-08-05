@@ -24,16 +24,15 @@ import android.os.Environment
 import androidx.test.core.app.ApplicationProvider
 import java.io.File
 
-class Bzip2HelperTaskTest : AbstractCompressedHelperTaskTest() {
+class Bzip2HelperTaskTest : AbstractCompressedHelperCallableTest() {
 
-    override fun createTask(relativePath: String): CompressedHelperTask = Bzip2HelperTask(
+    override fun createTask(relativePath: String): CompressedHelperCallable = Bzip2HelperCallable(
         ApplicationProvider.getApplicationContext(),
         File(
             Environment.getExternalStorageDirectory(),
             "test-archive.tar.bz2"
         ).absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

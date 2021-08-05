@@ -23,15 +23,14 @@ package com.amaze.filemanager.asynchronous.asynctasks.compress
 import android.os.Environment
 import java.io.File
 
-class EncryptedRarHelperTaskTest : AbstractCompressedHelperTaskTest() {
+class EncryptedRarHelperTaskTest : AbstractCompressedHelperCallableTest() {
 
-    override fun createTask(relativePath: String): CompressedHelperTask = RarHelperTask(
+    override fun createTask(relativePath: String): CompressedHelperCallable = RarHelperCallable(
         File(
             Environment.getExternalStorageDirectory(),
             "test-archive-encrypted.rar"
         ).absolutePath,
         relativePath,
-        false,
-        emptyCallback
+        false
     )
 }

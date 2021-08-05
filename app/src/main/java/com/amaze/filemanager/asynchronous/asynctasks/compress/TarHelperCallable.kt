@@ -21,22 +21,18 @@
 package com.amaze.filemanager.asynchronous.asynctasks.compress
 
 import android.content.Context
-import com.amaze.filemanager.adapters.data.CompressedObjectParcelable
-import com.amaze.filemanager.asynchronous.asynctasks.AsyncTaskResult
-import com.amaze.filemanager.utils.OnAsyncTaskFinished
-import org.apache.commons.compress.compressors.CompressorInputStream
-import org.apache.commons.compress.compressors.xz.XZCompressorInputStream
-import java.util.*
+import org.apache.commons.compress.archivers.ArchiveInputStream
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream
+import java.io.InputStream
 
-class XzHelperTask(
+class TarHelperCallable(
     context: Context,
     filePath: String,
     relativePath: String,
-    goBack: Boolean,
-    l: OnAsyncTaskFinished<AsyncTaskResult<ArrayList<CompressedObjectParcelable>>>
+    goBack: Boolean
 ) :
-    AbstractCompressedTarArchiveHelperTask(context, filePath, relativePath, goBack, l) {
+    AbstractCommonsArchiveHelperCallable(context, filePath, relativePath, goBack) {
 
-    override fun getCompressorInputStreamClass(): Class<out CompressorInputStream> =
-        XZCompressorInputStream::class.java
+    override fun createFrom(inputStream: InputStream): ArchiveInputStream =
+        TarArchiveInputStream(inputStream)
 }
