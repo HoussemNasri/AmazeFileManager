@@ -141,9 +141,8 @@ public class B0rkenZipTest {
             ApplicationProvider.getApplicationContext(),
             zipfile1.getAbsolutePath(),
             null,
-            false,
-            (data) -> {});
-    List<CompressedObjectParcelable> result = task.execute().get().result;
+            false);
+    List<CompressedObjectParcelable> result = task.call();
     assertEquals(1, result.size());
     assertEquals("good.txt", result.get(0).path);
     assertEquals(
@@ -159,9 +158,8 @@ public class B0rkenZipTest {
             ApplicationProvider.getApplicationContext(),
             zipfile2.getAbsolutePath(),
             null,
-            false,
-            (data) -> {});
-    List<CompressedObjectParcelable> result = task.execute().get().result;
+            false);
+    List<CompressedObjectParcelable> result = task.call();
     assertEquals(1, result.size());
     assertEquals("good.txt", result.get(0).path);
     assertEquals(
