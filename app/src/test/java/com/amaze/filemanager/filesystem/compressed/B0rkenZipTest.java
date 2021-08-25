@@ -138,10 +138,7 @@ public class B0rkenZipTest {
   public void testZipHelperTaskShouldOmitInvalidEntries() throws Exception {
     ZipHelperCallable task =
         new ZipHelperCallable(
-            ApplicationProvider.getApplicationContext(),
-            zipfile1.getAbsolutePath(),
-            null,
-            false);
+            ApplicationProvider.getApplicationContext(), zipfile1.getAbsolutePath(), null, false);
     List<CompressedObjectParcelable> result = task.call();
     assertEquals(1, result.size());
     assertEquals("good.txt", result.get(0).path);
@@ -155,10 +152,7 @@ public class B0rkenZipTest {
   public void testZipHelperTaskShouldOmitInvalidEntriesWithBackslash() throws Exception {
     ZipHelperCallable task =
         new ZipHelperCallable(
-            ApplicationProvider.getApplicationContext(),
-            zipfile2.getAbsolutePath(),
-            null,
-            false);
+            ApplicationProvider.getApplicationContext(), zipfile2.getAbsolutePath(), null, false);
     List<CompressedObjectParcelable> result = task.call();
     assertEquals(1, result.size());
     assertEquals("good.txt", result.get(0).path);

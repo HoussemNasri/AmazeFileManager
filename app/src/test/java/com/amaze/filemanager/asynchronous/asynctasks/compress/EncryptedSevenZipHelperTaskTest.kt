@@ -24,7 +24,8 @@ import android.os.Environment
 import java.io.File
 
 class EncryptedSevenZipHelperTaskTest : AbstractCompressedHelperCallableTest() {
-    override fun createTask(relativePath: String): CompressedHelperCallable = SevenZipHelperCallable(
+    override fun createTask(relativePath: String): CompressedHelperCallable
+    = SevenZipHelperCallable(
         File(
             Environment.getExternalStorageDirectory(),
             "test-archive-encrypted.7z"
