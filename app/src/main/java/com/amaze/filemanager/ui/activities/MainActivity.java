@@ -1414,7 +1414,7 @@ public class MainActivity extends PermissionsActivity
   }
 
   public void setPagingEnabled(boolean b) {
-    getTabFragment().mViewPager.setPagingEnabled(b);
+    getTabFragment().setPagingEnabled(b);
   }
 
   public File getUsbDrive() {
