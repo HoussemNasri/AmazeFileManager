@@ -88,6 +88,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -1405,6 +1406,12 @@ public class MainFragment extends Fragment
   public void updateList() {
     computeScroll();
     loadlist(mainFragmentViewModel.getCurrentPath(), true, mainFragmentViewModel.getOpenMode());
+  }
+
+  @Override
+  public void onConfigurationChanged(@NonNull Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    adapter.dismissPopupMenu();
   }
 
   @Override

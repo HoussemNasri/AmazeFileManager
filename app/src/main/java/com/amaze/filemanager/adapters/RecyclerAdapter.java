@@ -137,6 +137,8 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
   private int dragAndDropPreference;
   private boolean isGrid;
 
+  private PopupMenu popupMenu;
+
   public RecyclerAdapter(
       PreferenceActivity preferenceActivity,
       MainFragment m,
@@ -1130,7 +1132,7 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
   private void showPopup(View v, final LayoutElementParcelable rowItem) {
     v.setOnClickListener(
         view -> {
-          PopupMenu popupMenu =
+          popupMenu =
               new ItemPopupMenu(
                   context,
                   mainFrag.getMainActivity(),
@@ -1180,6 +1182,12 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
   private boolean getBoolean(String key) {
     return preferenceActivity.getBoolean(key);
+  }
+
+  public void dismissPopupMenu() {
+
+    if (popupMenu != null) popupMenu.dismiss();
+
   }
 
   @IntDef({TYPE_ITEM, TYPE_HEADER_FOLDERS, TYPE_HEADER_FILES, EMPTY_LAST_ITEM, TYPE_BACK})
