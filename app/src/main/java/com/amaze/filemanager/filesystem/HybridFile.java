@@ -470,11 +470,9 @@ public class HybridFile {
                       .stat(SshClientUtils.extractRemotePathFrom(path))
                       .getType()
                       .equals(FileMode.Type.DIRECTORY);
-                } catch (SFTPException notFound) {
-                  Log.e(
-                      getClass().getSimpleName(),
-                      "Fail to execute isDirectory for SFTP path :" + path);
-                  notFound.printStackTrace();
+                } catch (IOException executionFailure) {
+                  Log.e(TAG, "Fail to execute isDirectory for SFTP path :" + path);
+                  executionFailure.printStackTrace();
                   return false;
                 }
               }
